@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+   <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+      <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
+      <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+   </listAttribute>
+   <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+      <listEntry value="&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&#xA;&lt;runtimeClasspathEntry containerPath=&#34;org.eclipse.jdt.launching.JRE_CONTAINER&#34;&#xA;                       path=&#34;2&#34;&#xA;                       type=&#34;4&#34;/&gt;&#xA;"/>
+      <listEntry value="&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;&#xA;&lt;runtimeClasspathEntry containerPath=&#34;REPAST_SIMPHONY_LAUNCHER&#34; path=&#34;3&#34; type=&#34;4&#34;/&gt;&#xA;"/>
+   </listAttribute>
+   <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+   <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE"
+                    value="repast.simphony.runtime.RepastMain"/>
+   <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS"
+                    value="&#34;${workspace_loc:ConcertSimulation}/ConcertSimulation.rs&#34;"/>
+   <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="ConcertSimulation"/>
+   <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Xss10M -Xmx400M"/>
+</launchConfiguration>

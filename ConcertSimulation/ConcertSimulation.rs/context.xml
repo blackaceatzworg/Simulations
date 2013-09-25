@@ -1,0 +1,4 @@
+<context id="ConcertSimulation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://repast.org/scenario/context">
+  	<projection type="continuous space" id="location_space"></projection>
+  	<projection type="grid" id="location_grid"></projection>
+</context>
