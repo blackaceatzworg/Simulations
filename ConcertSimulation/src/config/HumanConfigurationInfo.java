@@ -1,12 +1,13 @@
 package config;
 
 import model.actors.Sex;
+import repast.simphony.space.continuous.NdPoint;
 
 public class HumanConfigurationInfo {
 	private float size;
 	private float weight;
 	private Sex sex;
-	
+	private NdPoint position;
 	
 	
 	public float getSize() {
@@ -26,6 +27,12 @@ public class HumanConfigurationInfo {
 	}
 	public void setSex(Sex sex) {
 		this.sex = sex;
+	}
+	public NdPoint getPosition() {
+		return position;
+	}
+	public void setPosition(NdPoint position) {
+		this.position = position;
 	}
 	
 	

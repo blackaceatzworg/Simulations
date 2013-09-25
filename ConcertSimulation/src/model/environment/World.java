@@ -79,7 +79,7 @@ public class World {
 		
 	}
 	
-	public Human createHuman(HumanConfigurationInfo humanCI){
+	public Human createHuman(HumanConfigurationInfo humanCI,Context<Object> context){
 		Human human = new Human(this.space, this.grid);
 		
 		
@@ -93,6 +93,9 @@ public class World {
 		
 		human.setRigidBody(rigidBody);
 		
+		context.add(human);
+		space.moveTo(human, humanCI.getPosition().getX(),humanCI.getPosition().getY());
+		grid.moveTo(human, (int)humanCI.getPosition().getX(),(int)humanCI.getPosition().getY());
 		
 		
 		return human;
