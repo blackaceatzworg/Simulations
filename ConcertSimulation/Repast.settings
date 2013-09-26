@@ -12,6 +12,6 @@
     <string>SettingsRegistryId</string>
     <string>Repast.registry</string>
     <string>LastLoadedScenario</string>
-    <string>/Users/daniel/Development/Bachelorarbeit/Repast/ConcertSimulation/ConcertSimulation.rs</string>
+    <string>/Users/daniel/Development/Bachelorarbeit/Simulations/ConcertSimulation/ConcertSimulation.rs</string>
   </hashtable>
 </simphony.settings.SettingsRegistry>

@@ -4,15 +4,23 @@ public class Configuration {
 	public static class Movement{
 	}
 	
-	
+	public static class Simulation{
+		public static final int standardFPS = 30;
+		
+		
+	}
 	
 	
 	public static class World{
-		private static float CELL_UNITS = 10;
+		private static float CELL_UNITS = 5;
 		
 		public static float getCellUnits(){
 			return World.CELL_UNITS;
 		}
+		
+		public static final int X_WIDTH = 20;
+		public static final int Z_WIDTH = 20;
+		public static final int Y_WIDTH = 20;
 		
 		
 	}

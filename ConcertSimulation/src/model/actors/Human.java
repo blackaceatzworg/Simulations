@@ -4,9 +4,13 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.bulletphysics.dynamics.DynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 
+import config.Configuration;
+import logging.Logging;
 import model.environment.Area;
+import model.environment.World;
 import movement.MovementSpeed;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.random.RandomHelper;
@@ -23,15 +27,16 @@ public class Human {
 	MovementSpeed walkingSpeed;
 	NdPoint destination;
 	
-	RigidBody rigidBody;
+	
+	private World world;
+	private RigidBody rigidBody;
 	
 	
-	
-	public Human(ContinuousSpace<Object> space, Grid<Object> grid) {
+	public Human(ContinuousSpace<Object> space, Grid<Object> grid,World world) {
 		this.space = space;
 		this.grid = grid;
 		this.walkingSpeed = new MovementSpeed(3, 5, 4);
-		this.lastPerformCall = new Date();
+		this.world = world;
 		
 	}
 	
@@ -40,7 +45,7 @@ public class Human {
 	private Date lastPerformCall;
 	
 	private long getElapsedTime(){
-		return now.getTime()-lastPerformCall.getTime();
+		return (now.getTime()-lastPerformCall.getTime())*(this.world.getFps()/Configuration.Simulation.standardFPS);
 	}
 	
 	
@@ -52,12 +57,22 @@ public class Human {
 	}
 	
 	
-	@ScheduledMethod(start=1,interval=1)
+	
+	@ScheduledMethod(start=2,interval=10)
 	public void perform(){
+		if(this.lastPerformCall ==null){
+			this.lastPerformCall = new Date();
+		}
 		this.now = new Date();
 		
 		if(this.destination == null){
-			boolean isAccessible = true;
+			
+			this.destination = new NdPoint(RandomHelper.nextDoubleFromTo(0, this.space.getDimensions().getWidth()),RandomHelper.nextDoubleFromTo(0, this.space.getDimensions().getHeight()));
+
+			
+			Logging.getLogger().info("New Destination: "+this.destination);
+			
+			/*boolean isAccessible = true;
 			
 			
 			
@@ -71,7 +86,7 @@ public class Human {
 					}
 				}
 				
-			}while(!isAccessible);
+			}while(!isAccessible);*/
 			
 		}
 		this.moveTowards(this.destination);
@@ -99,13 +114,16 @@ public class Human {
 			if(distance > distanceToPoint){
 				this.space.moveTo(this, otherPoint.getX(),otherPoint.getY());
 			}else{
-				this.space.moveByVector(this, distance*0.1 , angle,0);//Because we need to scale the area down by factor 10
+				this.space.moveByVector(this, distance , angle,0);
 			}
 			
 			
 			
 			myPoint = this.space.getLocation(this);
-			this.grid.moveTo(this, (int)myPoint.getX(),(int)myPoint.getY());
+			
+			Logging.getLogger().info(distance);
+			
+			this.grid.moveTo(this, (int)(myPoint.getX()*Configuration.World.getCellUnits()),(int)(myPoint.getY()*Configuration.World.getCellUnits()));
 		}
 	}
 	

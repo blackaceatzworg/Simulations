@@ -3,21 +3,13 @@
   <type>TWO_D</type>
   <styles>
     <entry>
-      <string>concertSimulation.Stage</string>
-      <string>repast.simphony.visualization.editedStyle.EditedStyle2D</string>
-    </entry>
-    <entry>
-      <string>concertSimulation.Human</string>
+      <string>model.actors.Human</string>
       <string>style.HumanStyle</string>
     </entry>
   </styles>
   <editedStyles>
     <entry>
-      <string>concertSimulation.Stage</string>
-      <string>concertSimulation.Stage.style_2.xml</string>
-    </entry>
-    <entry>
-      <string>concertSimulation.Human</string>
+      <string>model.actors.Human</string>
       <null/>
     </entry>
   </editedStyles>
@@ -31,18 +23,14 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>1779385572</hashCode>
+    <hashCode>-957022196</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>location_grid</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
-      <string>concertSimulation.Stage</string>
-      <int>1</int>
-    </entry>
-    <entry>
-      <string>concertSimulation.Human</string>
+      <string>model.actors.Human</string>
       <int>0</int>
     </entry>
   </layerOrder>

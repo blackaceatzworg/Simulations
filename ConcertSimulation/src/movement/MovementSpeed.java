@@ -67,7 +67,7 @@ public class MovementSpeed {
 			factorDistance = 1;
 		
 		}
-		return this.currentValue*(factorDistance/factorTime);
+		return this.currentValue*timespan*(factorDistance/factorTime);
 		
 	}
 	

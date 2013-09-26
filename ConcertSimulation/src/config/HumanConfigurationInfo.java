@@ -34,7 +34,10 @@ public class HumanConfigurationInfo {
 	public void setPosition(NdPoint position) {
 		this.position = position;
 	}
-	
+	@Override
+	public String toString() {
+		return String.format("size: %.2f; weight: %.2f; sex: %s", size, weight, sex);
+	}
 	
 	
 	
