@@ -115,7 +115,7 @@ public class Human {
 	
 	private void jump() {
 		this.rigidBody.activate();
-		this.rigidBody.applyCentralForce(new  Vector3f(0, arg1, arg2));
+		//this.rigidBody.applyCentralForce(new  Vector3f(0, arg1, arg2));
 		
 	}
 
