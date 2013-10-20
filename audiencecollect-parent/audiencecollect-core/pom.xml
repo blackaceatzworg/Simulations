@@ -1,0 +1,17 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion xmlns="">4.0.0</modelVersion>
+  <parent xmlns="">
+    <groupId>audiencecollect</groupId>
+    <artifactId>audiencecollect-parent</artifactId>
+    <version>0.1</version>
+  </parent>
+  <artifactId xmlns="">audiencecollect-core</artifactId>
+  <name xmlns="">audiencecollect-core</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.h2database</groupId>
+  		<artifactId>h2</artifactId>
+  		<version>1.3.172</version>
+  	</dependency>
+  </dependencies>
+</project>

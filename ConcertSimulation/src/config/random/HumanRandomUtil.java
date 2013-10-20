@@ -56,10 +56,10 @@ public class HumanRandomUtil {
 	}
 	
 	public static float getRandomMaleWeight(float size){
-		return (float) Math.sqrt(MEN_BMI_DISTRIBUTION.sample()/Math.pow(size, 2));
+		return (float) Math.sqrt(MEN_BMI_DISTRIBUTION.sample()*Math.pow(size, 2));
 	}
 	public static float getRandomFemaleWeight(float size){
-		return (float) Math.sqrt(WOMEN_BMI_DISTRIBUTION.sample()/Math.pow(size,2));
+		return (float) Math.sqrt(WOMEN_BMI_DISTRIBUTION.sample()*Math.pow(size,2));
 	}
 	
 	

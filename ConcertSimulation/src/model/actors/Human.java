@@ -4,8 +4,11 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.vecmath.Vector3f;
+
 import com.bulletphysics.dynamics.DynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.linearmath.Transform;
 
 import config.Configuration;
 import logging.Logging;
@@ -57,6 +60,14 @@ public class Human {
 	}
 	
 	
+	@ScheduledMethod(start=2,interval=10)
+	public void monitorState(){
+		Transform transform = new Transform();
+		this.rigidBody.getMotionState().getWorldTransform(transform);
+		
+		Logging.getLogger().info(transform.origin);
+		
+	}
 	
 	@ScheduledMethod(start=2,interval=10)
 	public void perform(){
@@ -65,14 +76,14 @@ public class Human {
 		}
 		this.now = new Date();
 		
-		if(this.destination == null){
+		/*if(this.destination == null){
 			
 			this.destination = new NdPoint(RandomHelper.nextDoubleFromTo(0, this.space.getDimensions().getWidth()),RandomHelper.nextDoubleFromTo(0, this.space.getDimensions().getHeight()));
 
 			
-			Logging.getLogger().info("New Destination: "+this.destination);
+			//Logging.getLogger().info("New Destination: "+this.destination);
 			
-			/*boolean isAccessible = true;
+			boolean isAccessible = true;
 			
 			
 			
@@ -86,20 +97,29 @@ public class Human {
 					}
 				}
 				
-			}while(!isAccessible);*/
+			}while(!isAccessible);
 			
 		}
 		this.moveTowards(this.destination);
 		
 		if(this.destination.getX()==this.space.getLocation(this).getX()&&this.destination.getY()==this.space.getLocation(this).getY()){
+			jump();
 			this.destination = null;
 		}
 		
 		
 		
-		lastPerformCall = now;
+		lastPerformCall = now;*/
 	}
 	
+	
+	private void jump() {
+		this.rigidBody.activate();
+		this.rigidBody.applyCentralForce(new  Vector3f(0, arg1, arg2));
+		
+	}
+
+
 	public void moveTowards(NdPoint pt){
 		if(!pt.equals(this.grid.getLocation(this))){
 			NdPoint myPoint = this.space.getLocation(this);
@@ -120,8 +140,6 @@ public class Human {
 			
 			
 			myPoint = this.space.getLocation(this);
-			
-			Logging.getLogger().info(distance);
 			
 			this.grid.moveTo(this, (int)(myPoint.getX()*Configuration.World.getCellUnits()),(int)(myPoint.getY()*Configuration.World.getCellUnits()));
 		}

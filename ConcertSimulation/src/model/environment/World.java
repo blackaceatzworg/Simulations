@@ -33,6 +33,7 @@ import com.bulletphysics.collision.shapes.StaticPlaneShape;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.dynamics.character.KinematicCharacterController;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
@@ -147,8 +148,11 @@ public class World {
 		
 		
 		
+		//KinematicCharacterController controller = new KinematicCharacterController(ghostObject, convexShape, stepHeight)
 		
-		/*DefaultMotionState motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(0,0,0,1),new Vector3f(0,0,0),1.0f)));
+		
+		
+		DefaultMotionState motionState = new DefaultMotionState(new Transform(new Matrix4f(new Quat4f(0,0,0,1),new Vector3f((float)humanCI.getPosition().getX(),0,(float)humanCI.getPosition().getY()),1.0f)));
 		CollisionShape shape = new CylinderShape(new Vector3f(0.4f, humanCI.getSize()/100, 1));
 		Vector3f inertia = new Vector3f(0,0,0);
 		shape.calculateLocalInertia(humanCI.getWeight(), inertia);
@@ -156,11 +160,11 @@ public class World {
 		RigidBody rigidBody = new RigidBody(fallRigidBodyCI);
 		this.dynamicsWorld.addRigidBody(rigidBody);
 		
-		human.setRigidBody(rigidBody);*/
+		human.setRigidBody(rigidBody);
 		
 		context.add(human);
 		space.moveTo(human, humanCI.getPosition().getX(),humanCI.getPosition().getY());
-		grid.moveTo(human, (int)humanCI.getPosition().getX(),(int)humanCI.getPosition().getY());
+		grid.moveTo(human, (int)(humanCI.getPosition().getX()*Configuration.World.getCellUnits()),(int)(humanCI.getPosition().getY()*Configuration.World.getCellUnits()));
 		
 		Logging.getLogger().info("Human created: "+humanCI);
 		
