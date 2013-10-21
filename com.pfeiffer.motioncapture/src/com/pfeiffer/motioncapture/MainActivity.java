@@ -113,7 +113,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 				this.senderTask.execute();
 				Object[] o = new Object[1];
 				o[0] = "start";
-				this.senderTask.appendMessage(new OSCMessage("/accxyz",o));
+				this.senderTask.appendMessage(new OSCMessage("/devicedata",o));
 			} catch (SocketException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -129,7 +129,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 			
 			Object[] o = new Object[1];
 			o[0] = "stop";
-			this.senderTask.appendMessage(new OSCMessage("/accxyz",o));
+			this.senderTask.appendMessage(new OSCMessage("/devicedata",o));
 			
 			this.senderTask.stop(false);
 		}
@@ -167,12 +167,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 			z.setText(String.valueOf(MathUtil.round(accInWorldCoordinates[2],1)));
 			
 			
-			Object[] args = new Object[3];
+			Object[] args = new Object[4];
 			args[0]=MathUtil.round(accInWorldCoordinates[0],2);
 			args[1]=MathUtil.round(accInWorldCoordinates[1],2);
 			args[2]=MathUtil.round(accInWorldCoordinates[2],2);
-			//args[3]=this.mac;
-			OSCMessage message = new OSCMessage("/accxyz", args);
+			args[3]=this.mac;
+			OSCMessage message = new OSCMessage("/devicedata", args);
 			
 			this.senderTask.appendMessage(message);
 		

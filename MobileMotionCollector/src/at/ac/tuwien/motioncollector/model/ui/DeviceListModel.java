@@ -3,16 +3,24 @@ package at.ac.tuwien.motioncollector.model.ui;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
-import javax.swing.ListModel;
+import javax.swing.AbstractListModel;
+import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import at.ac.tuwien.motioncollector.model.Device;
 
-public class DeviceListModel implements ListModel<Device> {
+public class DeviceListModel extends AbstractListModel<Device> {
 
-	List<Device> collection ;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2317768443315824981L;
+
+	private List<Device> collection ;
+	
 	
 	public DeviceListModel() {
 		this.collection = new ArrayList<Device>();
@@ -40,19 +48,29 @@ public class DeviceListModel implements ListModel<Device> {
 			}
 		});
 		
+		fireEvent(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, this.collection.indexOf(device), this.collection.indexOf(device)));
+		
+	}
+	
+	public List<Device> getElements(){
+		return this.collection;
 	}
 	
 
 	@Override
 	public void addListDataListener(ListDataListener l) {
-		// TODO Auto-generated method stub
-		
+		this.listenerList.add(ListDataListener.class, l);
 	}
 
 	@Override
 	public void removeListDataListener(ListDataListener l) {
-		// TODO Auto-generated method stub
-		
+		this.listenerList.remove(ListDataListener.class, l);
+	}
+	
+	private void fireEvent(ListDataEvent event){
+		for(ListDataListener listener: this.listenerList.getListeners(ListDataListener.class)){
+			listener.contentsChanged(event);
+		}
 	}
 
 }

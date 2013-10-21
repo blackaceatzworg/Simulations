@@ -31,4 +31,11 @@ public class DeviceData {
 		this.receiveDate = receiveDate;
 	}
 	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return String.format("x: %.2f y: %.2f z: %.2f MAC:%s", this.velocity.getX(),this.velocity.getY(),this.velocity.getZ(),this.macAddress);
+	}
+	
+	
 }

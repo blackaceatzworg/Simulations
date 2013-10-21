@@ -43,17 +43,19 @@ public class DeviceDataListener implements Runnable {
 
 					DeviceData data = new DeviceData();
 
-					data.setReceiveDate(time);
-					if (parameter[0].getClass() == Float.class
+					data.setReceiveDate(new Date());
+					if (parameter.length == 4
+							&& parameter[0].getClass() == Float.class
 							&& parameter[1].getClass() == Float.class
 							&& parameter[2].getClass() == Float.class
 							&& parameter[3].getClass() == String.class) {
 						data.setVelocity(new Velocity((Float) parameter[0],
 								(Float) parameter[1], (Float) parameter[2]));
 						data.setMacAddress(parameter[3].toString());
+						DeviceDataListener.this.dataQueue.add(data);
 					}
 
-					DeviceDataListener.this.receiveData(data);
+					
 
 				}
 			});
@@ -66,10 +68,12 @@ public class DeviceDataListener implements Runnable {
 	}
 
 	public void registerHandler(DeviceDataHandler handler) {
+		new Thread(handler).start();
 		this.handlers.add(handler);
 	}
 
 	public void unregisterHandler(DeviceDataHandler handler) {
+		handler.close();
 		this.handlers.remove(handler);
 	}
 
@@ -77,13 +81,17 @@ public class DeviceDataListener implements Runnable {
 		for (DeviceDataHandler handler : this.handlers) {
 			handler.handleData(data);
 		}
+		
+		
 	}
 
 	public void close() {
 		this.isRunning = false;
+		this.stop = true;
 		for (DeviceDataHandler handler : this.handlers) {
 			handler.close();
 		}
+		this.receiver.close();
 
 	}
 
@@ -95,13 +103,14 @@ public class DeviceDataListener implements Runnable {
 		}
 
 		this.receiver.stopListening();
+		
 	}
 
 	public void startListening() {
 
 		this.receiver.startListening();
 		for (DeviceDataHandler handler : this.handlers) {
-			handler.stop();
+			handler.start();
 		}
 		this.isRunning = true;
 	}

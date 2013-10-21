@@ -132,7 +132,7 @@ public class CollectorEndpoint implements Runnable {
 
 				}
 			};
-			receiver.addListener("/accxyz", listener);
+			receiver.addListener("/devicedata", listener);
 			receiver.startListening();
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
