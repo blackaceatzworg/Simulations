@@ -10,32 +10,32 @@ public class UIDeviceDataHandler extends AbstractQueuedDeviceDataHandler {
 
 	private ApplicationContainer container;
 	private HashSet<String> macAddresses;
-	
+
 	public UIDeviceDataHandler() {
 		super();
-		container =  ApplicationContainer.getInstance();
+		container = ApplicationContainer.getInstance();
 		macAddresses = new HashSet<String>();
-		
-		for(Device d:container.getDevicesPanel().getDeviceList()){
+
+		for (Device d : container.getDevicesPanel().getDeviceList()) {
 			macAddresses.add(d.getMacAddress());
 		}
-		
-		
-		
+
 	}
-	
+
 	@Override
 	public void perform(DeviceData data) {
-		
-		if(data.getMacAddress() != null && data.getMacAddress().length() != 0 && !macAddresses.contains(data.getMacAddress())){
-			
+		if (data != null && data.getMacAddress() != null) {
+			Device device = new Device(data.getMacAddress());
+			if (data.getMacAddress().length() != 0
+					&& !macAddresses.contains(data.getMacAddress())) {
+
 				macAddresses.add(data.getMacAddress());
-				container.getDevicesPanel().addDevice(new Device(data.getMacAddress()));
-			
+
+				container.getDevicesPanel().addDevice(device);
+				container.getTimelinePanel().addDevice(device);
+			}
+			container.getTimelinePanel().addData(device, data);
 		}
-		
-		 
-		
 
 	}
 

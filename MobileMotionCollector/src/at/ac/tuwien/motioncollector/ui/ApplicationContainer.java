@@ -30,6 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.border.EmptyBorder;
+import java.awt.Color;
 
 public class ApplicationContainer {
 
@@ -139,7 +140,7 @@ public class ApplicationContainer {
 	}
 	private void createListener(){
 		listener = new DeviceDataListener();
-		listener.registerHandler(new DeviceDataConsoleWriter());
+		//listener.registerHandler(new DeviceDataConsoleWriter());
 		listener.registerHandler(new UIDeviceDataHandler());
 		new Thread(listener).start();
 		listener.startListening();
@@ -158,7 +159,9 @@ public class ApplicationContainer {
 	public DevicesPanel getDevicesPanel() {
 		return devicesPanel;
 	}
-	
+	public TimelinePanel getTimelinePanel() {
+		return timelinePanel;
+	}
 	
 	
 
