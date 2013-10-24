@@ -30,15 +30,15 @@ public class TimelinePanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private Map<Device, ArrayList<VelocityTimeline>> velocityTimelines;
 	JPanel drawingPanel;
-	
+	private int deviceCount;
+	private Color[] colors= {Color.black,Color.cyan,Color.magenta};;
 	/**
 	 * Create the panel.
 	 */
 	public TimelinePanel() {
 		
 		velocityTimelines = new TreeMap<Device, ArrayList<VelocityTimeline>>();
-		
-		
+		deviceCount = 0;
 		initialize();
 	}
 	
@@ -78,12 +78,14 @@ public class TimelinePanel extends JPanel {
 	}
 	
 	public void addDevice(Device device){
+		
 		if(!velocityTimelines.containsKey(device)){
 			ArrayList<VelocityTimeline> timelines = new ArrayList<VelocityTimeline>();
-			VelocityTimeline absTimeline =new VelocityTimeline(Color.black, drawingPanel.getWidth(), drawingPanel.getHeight(), 5000, Axis.Abs);
+			VelocityTimeline absTimeline =new VelocityTimeline(this.colors[this.deviceCount], drawingPanel.getWidth(), drawingPanel.getHeight(), 5000, Axis.Abs);
 			absTimeline.setActive(true);
 			timelines.add(absTimeline);
 			velocityTimelines.put(device, timelines);
+			this.deviceCount++;
 		}
 	}
 	

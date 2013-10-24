@@ -79,10 +79,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 		this.mMagnecticFieldSensor = this.mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		
 		this.editTextIPAddr = (EditText) this.findViewById(R.id.editTextIPAdress);
-		this.editTextIPAddr.setText("192.168.0.12");
+		this.editTextIPAddr.setText("169.254.148.112");
 		
 		EditText smo = (EditText) this.findViewById(R.id.editTextSmoothing);
-		smo.setText("0.2");
+		smo.setText("0.05");
 		
 		this.mac = this.getMACAdress();
 		
@@ -200,75 +200,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 		mSensorManager.unregisterListener(this);
 	}
 	
-	protected String getMACAdress(){
-		WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
-
-		if(!wifiManager.isWifiEnabled()){
-			wifiManager.setWifiEnabled(true);
-		}
-		
-		WifiInfo info = wifiManager.getConnectionInfo();
-	    String address = info.getMacAddress();
-	    
-	    return address;
-		
-	}
+	
 	
 	private class SendOSCMessageTask extends AsyncTask<Void, Void, Void>{
 
-		private OSCPortOut sender;
-		private ConcurrentLinkedQueue<OSCMessage> messageQueue;
 		
-		public SendOSCMessageTask(String ipAddr) throws SocketException, UnknownHostException {
-			this.sender = new OSCPortOut(InetAddress.getByName(ipAddr),8000);
-			this.messageQueue = new ConcurrentLinkedQueue<OSCMessage>();
-		}
-		
-		public void appendMessage(OSCMessage message){
-			messageQueue.add(message);
-		}
-		
-		
-		private boolean isRunning = true;
-		public void stop(boolean cancel){
-			if(cancel){
-				this.cancel(true);
-			}else{
-				this.isRunning = false;
-			}
-		}
-		
-		@Override
-		protected Void doInBackground(Void... params) {
-			if(this.sender== null){
-				this.isRunning = false;
-			}
-			
-			while(isRunning){
-				while(this.messageQueue.size() == 0){
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				
-				try {
-					sender.send(this.messageQueue.poll());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				
-			}
-			
-			
-			
-			// TODO Auto-generated method stub
-			return null;
-		}
 		
 	}
 	

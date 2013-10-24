@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion xmlns="">4.0.0</modelVersion>
+  <parent xmlns="">
+    <groupId>audiencecollect</groupId>
+    <artifactId>audiencecollect-parent</artifactId>
+    <version>0.1</version>
+  </parent>
+  <artifactId xmlns="">audiencecollect-collector</artifactId>
+  <name xmlns="">audiencecollect-collector</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>audiencecollect</groupId>
+  		<artifactId>audiencecollect-core</artifactId>
+  		<version>0.1</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.illposed.osc</groupId>
+  		<artifactId>javaosc-core</artifactId>
+  		<version>0.2</version>
+  	</dependency>
+  </dependencies>
+</project>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Motion Capture</string>
+    <string name="action_settings">Settings</string>
+    <string name="motioncollect_logo">Motioncollect Logo</string>
+    <string name="start">Start</string>
+    <string name="zum_starten_antippen">Zum Starten antippen</string>
+    <string name="zum_stoppen_antippen">Zum Stoppen antippen</string>
+
+</resources>
