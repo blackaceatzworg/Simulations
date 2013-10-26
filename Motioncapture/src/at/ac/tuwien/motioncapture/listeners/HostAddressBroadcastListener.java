@@ -19,8 +19,7 @@ public final class HostAddressBroadcastListener implements OSCListener{
 	
 	private static final String LOGGING_TAG = "HostAddressBroadcastListener";
 	
-	public HostAddressBroadcastListener(int port,String key, InetAddress hostAddress) throws SocketException {
-		this.address = hostAddress;
+	public HostAddressBroadcastListener(int port,String key) throws SocketException {
 		this.receiver = new OSCPortIn(port);
 		this.receiver.addListener(key, this);
 		this.receiver.startListening();
@@ -32,6 +31,20 @@ public final class HostAddressBroadcastListener implements OSCListener{
 			this.receiver.stopListening();
 		}
 		this.receiver.close();
+		this.receiver = null;
+	}
+	
+	public boolean isRunning(){
+		if(this.receiver==null){
+			return false;
+		}
+		if(!this.receiver.isListening()){
+			return false;
+		}
+		return true;
+	}
+	public InetAddress getAddress() {
+		return address;
 	}
 	
 	public void acceptMessage(Date time, OSCMessage message) {
@@ -42,6 +55,7 @@ public final class HostAddressBroadcastListener implements OSCListener{
 				address = Inet4Address.getByName((String)param[0]);
 				if(address!= null){
 					this.receiver.stopListening();
+					this.receiver.close();
 				}
 			}
 		} catch (UnknownHostException e) {

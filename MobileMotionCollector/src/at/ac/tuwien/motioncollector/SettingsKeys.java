@@ -2,7 +2,9 @@ package at.ac.tuwien.motioncollector;
 public enum SettingsKeys {
 	ApplicationName("applicationname"),
 	Version("version")
-	,OSCPortIn("oscportin");
+	,OSCPortIn("oscportin")
+	,OSCBroadcastPort("oscportbroadcast")
+	,OSCBroadcastKey("osckeybroadcast");
 	
 	private final String key;
 	

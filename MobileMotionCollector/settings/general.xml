@@ -5,4 +5,6 @@
 <entry key="applicationname">Mobile Motion Collector</entry>
 <entry key="version">0.1</entry>
 <entry key="oscportin">8000</entry>
+<entry key="oscportbroadcast">8001</entry>
+<entry key="osckeybroadcast">/serverbroadcast</entry>
 </properties>

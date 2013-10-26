@@ -23,6 +23,11 @@ public class Settings {
 		
 		
 	}
+	
+	public static int getInt(String key){
+		return Integer.parseInt(getValue(key));
+	}
+	
 	private static void loadSettings() {
 		Properties settings = new Properties();
 		try {

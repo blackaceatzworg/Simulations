@@ -1,9 +1,7 @@
 package at.ac.tuwien.motioncapture;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.app.NotificationManager;
@@ -21,18 +19,18 @@ import android.util.Log;
 import at.ac.tuwien.motioncapture.listeners.HostAddressBroadcastListener;
 import at.ac.tuwien.motioncapture.listeners.VelocitySensorListener;
 import at.ac.tuwien.motioncapture.model.Velocity;
-import at.ac.tuwien.motioncapture.tasks.SendOSCMessageTask;
+import at.ac.tuwien.motioncapture.tasks.DeviceDataSender;
 
 public class OSCSenderService extends Service {
 	static final String LOGGING_TAG = "OSCSenderService";
 
 	private VelocitySensorListener velocitySensorListener;
 	private HostAddressBroadcastListener broadcastListener;
-	private SendOSCMessageTask<Velocity> senderTask;
+	private DeviceDataSender<Velocity> sender;
 	private ConcurrentLinkedQueue<Velocity> messageQueue;
 
 	private static boolean running = false;
-	
+
 	private String macAddress;
 	private InetAddress hostAddress;
 
@@ -50,28 +48,22 @@ public class OSCSenderService extends Service {
 	@Override
 	public void onCreate() {
 
-		// try {
-		// this.broadcastListener = new
-		// HostAddressBroadcastListener(getResources().getInteger(R.integer.portBroadcast),
-		// getResources().getString(R.string.oscBroadcastKey),
-		// hostAddress);
-		//
-		// } catch (SocketException ex) {
-		// Log.e(LOGGING_TAG,
-		// "Broadcastlistener could not be started. Service stopped.",ex);
-		// this.stopSelf();
-		// }
+		try {
+			this.broadcastListener = new HostAddressBroadcastListener(
+					getResources().getInteger(R.integer.portBroadcast),
+					getResources().getString(R.string.oscBroadcastKey));
+
+		} catch (SocketException ex) {
+			Log.e(LOGGING_TAG,
+					"Broadcastlistener could not be started. Service stopped.",
+					ex);
+			this.stopSelf();
+		}
 		setStillAliveNotification();
 		running = true;
 
 		this.messageQueue = new ConcurrentLinkedQueue<Velocity>();
 		this.macAddress = this.getMacAddress();
-
-		try {
-			this.hostAddress = Inet4Address.getByName("10.0.0.5");
-		} catch (UnknownHostException e) {
-			Log.e(LOGGING_TAG, "Hostname not known", e);
-		}
 
 	}
 
@@ -90,11 +82,11 @@ public class OSCSenderService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		
+
 		Thread thread = new Thread(new Runnable() {
 
 			public void run() {
-				while (hostAddress == null) {
+				while ((hostAddress= broadcastListener.getAddress() ) == null) {
 					try {
 						Thread.sleep(50);
 					} catch (InterruptedException e) {
@@ -111,59 +103,60 @@ public class OSCSenderService extends Service {
 
 	private void start() {
 		try {
-			this.senderTask = new SendOSCMessageTask<Velocity>(
-					this.messageQueue, this.hostAddress
-					, getResources().getInteger(R.integer.port), this.macAddress,
-					getResources().getString(R.string.oscSendKey));
 
-			this.senderTask.execute();
+			this.broadcastListener.close();
 			
+			this.sender = new DeviceDataSender<Velocity>(messageQueue,
+					hostAddress, getResources().getInteger(R.integer.port),
+					macAddress, getResources().getString(R.string.oscSendKey));
+
+			this.sender.start();
+
 			this.velocitySensorListener = new VelocitySensorListener(
 					(SensorManager) getSystemService(SENSOR_SERVICE),
 					this.messageQueue);
-			
+
 			this.velocitySensorListener.start();
-		
-		
+
 		} catch (SocketException e) {
-			// TODO Log
+			Log.e(LOGGING_TAG, "Ouput Port couldnt be obtained.", e);
 		}
 	}
 
 	@Override
 	public void onDestroy() {
-		
-		removeStillAliveNotification();
 
-		
-		// this.broadcastListener.close();
+		removeStillAliveNotification();
 		this.velocitySensorListener.stop();
-		this.senderTask.stop();
-		
+		this.sender.stop();
+
+		if(this.broadcastListener!=null && this.broadcastListener.isRunning()){
+			this.broadcastListener.close();
+		}
 		
 		Log.i(LOGGING_TAG, "Service destroyed");
-		
-		running=false;
+
+		running = false;
 	}
-	
-	private void removeStillAliveNotification(){
+
+	private void removeStillAliveNotification() {
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mNotificationManager.cancel(1);
 	}
-	
-	private void setStillAliveNotification(){
+
+	private void setStillAliveNotification() {
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 				this).setSmallIcon(R.drawable.ic_launcher)
 				.setContentTitle("Capture running!")
 				.setContentText("Turn it off to save Battery.");
-		// Creates an explicit intent for an Activity in your app
+
 		Intent resultIntent = new Intent(this, Main.class);
 
 		TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
 		stackBuilder.addParentStack(Main.class);
 		stackBuilder.addNextIntent(resultIntent);
-		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
-				0, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
+				PendingIntent.FLAG_UPDATE_CURRENT);
 		mBuilder.setContentIntent(resultPendingIntent);
 		mBuilder.setProgress(1, 0, true);
 		mBuilder.setOngoing(true);
@@ -171,5 +164,6 @@ public class OSCSenderService extends Service {
 		// mId allows you to update the notification later on.
 		mNotificationManager.notify(1, mBuilder.build());
 	}
+	
 
 }
