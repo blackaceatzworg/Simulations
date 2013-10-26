@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="oscSendKey">/devicedata</string>
+    <string name="oscBroadcastKey">/serverbroadcast</string>
+    <integer name="port">8000</integer>
+    <integer name="portBroadcast">8001</integer>
+</resources>
