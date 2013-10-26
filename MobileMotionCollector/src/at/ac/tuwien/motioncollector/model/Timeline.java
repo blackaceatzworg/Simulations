@@ -2,21 +2,21 @@ package at.ac.tuwien.motioncollector.model;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Ellipse2D.Float;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+
+
 public class Timeline {
 	private SortedMap<Date, TimelineData> dataMap;
-	private LinkedList<TimelineData> dataList;
+	private List<TimelineData> dataList;
 	private Color color;
 	private Shape shape;
 
@@ -26,13 +26,20 @@ public class Timeline {
 	private TimelineData minimum, maximum;
 	private long timespan;
 	private static final float TIMESPAN_PAST =0.9f;
+	private Timeline.Type type;
+	
+	
+	public enum Type{
+		Dots,Line;
+	}
 	
 	
 	public Timeline() {
 		super();
 		this.dataMap = new TreeMap<Date,TimelineData>();
-		this.dataList = new LinkedList<TimelineData>();
+		this.dataList = new ArrayList<TimelineData>();
 		this.minimum = this.maximum = null;
+		this.type = Type.Line;
 	}
 	
 	public Timeline(Color color, Shape shape,int height,int width,long timespan) {
@@ -55,6 +62,16 @@ public class Timeline {
 		this.height = height;
 		this.width = width;
 		this.timespan = timespan;
+	}
+
+	
+	public Timeline(Color color, int height, int width, long timespan, Type type) {
+		this();
+		this.color = color;
+		this.height = height;
+		this.width = width;
+		this.timespan = timespan;
+		this.type = type;
 	}
 
 	public void appendData(TimelineData data){
@@ -112,17 +129,56 @@ public class Timeline {
 		this.maximum.setValue(+2);
 	}
 
-
 	public void paint(Graphics g){
+		if(this.type == Type.Dots){
+			paintPoints(g);
+		}else if(this.type == Type.Line){
+			paintLine(g);
+		}
+	}
+	
+	public void paintLine(Graphics g){
 		if(this.dataMap.size()==0){
 			return;
 		}
 		Date latestKey = this.dataMap.lastKey();
+		
+		for(int i = 0;i < this.dataList.size();i++){
+			float x1,x2,y1,y2;
+			TimelineData data1 = this.dataList.get(i);
+			
+			y1 = normalizeY(data1.getValue());
+			x1 = normalizeX(data1.getDate().getTime()-latestKey.getTime());
+			
+			if(this.dataList.size()>i+1){
+				TimelineData data2 = this.dataList.get(i+1);
+				
+				y2 = normalizeY(data2.getValue());
+				x2 = normalizeX(data2.getDate().getTime()-latestKey.getTime());
+				
+				g.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+			
+			
+			}
+			
+		}
+	}
+	
+	public void paintPoints(Graphics g){
+		if(this.dataMap.size()==0){
+			return;
+		}
+		Date latestKey = this.dataMap.lastKey();
+		
+
+		
 		for(TimelineData data:this.dataList){
 			float x,y;
 			
 			y = normalizeY(data.getValue());
 			x = normalizeX(data.getDate().getTime()-latestKey.getTime());
+			
+			
 			
 			Rectangle2D bounds = new Rectangle2D.Float((float)(x-shape.getBounds2D().getWidth()/2), (float)(y-shape.getBounds2D().getHeight ()/2), (float)(shape.getBounds2D().getWidth()), (float)(shape.getBounds2D().getHeight()));
 			paintShape(g, bounds);
@@ -137,9 +193,6 @@ public class Timeline {
 		}
 	}
 	
-	private Point2D getRoot(){
-		return new Point2D.Float(normalizeX(0), normalizeY(0));
-	}
 	
 	private float normalizeY(float y){
 		return this.height - (y-minimum.getValue())*(this.height/(this.maximum.getValue()-this.minimum.getValue()));
@@ -150,6 +203,23 @@ public class Timeline {
 		float temp = point*factor;
 		return temp;
 	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+	
 	
 	
 	

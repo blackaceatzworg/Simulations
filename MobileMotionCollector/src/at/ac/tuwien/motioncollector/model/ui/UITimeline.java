@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Shape;
 
-import at.ac.tuwien.motioncollector.model.Device;
 import at.ac.tuwien.motioncollector.model.Timeline;
 
 public class UITimeline extends Timeline {

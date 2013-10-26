@@ -27,6 +27,9 @@ public final class HostAddressBroadcastListener implements OSCListener{
 
 	
 	public void close(){
+		if(this.receiver==null){
+			return;
+		}
 		if(this.receiver.isListening()){
 			this.receiver.stopListening();
 		}

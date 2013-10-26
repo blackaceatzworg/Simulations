@@ -27,7 +27,7 @@ public abstract class AbstractQueuedDeviceDataHandler implements
 					this.perform(data);
 				} else {
 					try {
-						Thread.sleep(10);
+						Thread.sleep(30);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -63,4 +63,14 @@ public abstract class AbstractQueuedDeviceDataHandler implements
 	public abstract void perform(DeviceData data);
 
 	public abstract void closeChildren();
+	
+	protected void pause(long millis){
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.queue.clear();
+	}
 }

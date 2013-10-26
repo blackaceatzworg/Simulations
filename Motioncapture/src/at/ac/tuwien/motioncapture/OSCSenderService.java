@@ -21,7 +21,7 @@ import at.ac.tuwien.motioncapture.listeners.VelocitySensorListener;
 import at.ac.tuwien.motioncapture.model.Velocity;
 import at.ac.tuwien.motioncapture.tasks.DeviceDataSender;
 
-public class OSCSenderService extends Service {
+public class OSCSenderService extends Service  {
 	static final String LOGGING_TAG = "OSCSenderService";
 
 	private VelocitySensorListener velocitySensorListener;
@@ -48,6 +48,7 @@ public class OSCSenderService extends Service {
 	@Override
 	public void onCreate() {
 
+		running = true;
 		try {
 			this.broadcastListener = new HostAddressBroadcastListener(
 					getResources().getInteger(R.integer.portBroadcast),
@@ -60,7 +61,7 @@ public class OSCSenderService extends Service {
 			this.stopSelf();
 		}
 		setStillAliveNotification();
-		running = true;
+		
 
 		this.messageQueue = new ConcurrentLinkedQueue<Velocity>();
 		this.macAddress = this.getMacAddress();
@@ -86,14 +87,17 @@ public class OSCSenderService extends Service {
 		Thread thread = new Thread(new Runnable() {
 
 			public void run() {
-				while ((hostAddress= broadcastListener.getAddress() ) == null) {
+				while (running && (hostAddress= broadcastListener.getAddress() ) == null) {
 					try {
-						Thread.sleep(50);
+						Thread.sleep(100);
 					} catch (InterruptedException e) {
 						Log.i(LOGGING_TAG, "Waiting thread interrupted");
 					}
 				}
-				start();
+				if(running){
+					start();
+				}
+				
 			}
 		});
 		thread.start();
@@ -125,10 +129,16 @@ public class OSCSenderService extends Service {
 
 	@Override
 	public void onDestroy() {
-
+		running = false;
 		removeStillAliveNotification();
-		this.velocitySensorListener.stop();
-		this.sender.stop();
+		
+		if(this.velocitySensorListener!= null){
+			this.velocitySensorListener.stop();
+		}
+		
+		if(this.sender!=null){
+			this.sender.stop();
+		}
 
 		if(this.broadcastListener!=null && this.broadcastListener.isRunning()){
 			this.broadcastListener.close();
@@ -136,7 +146,7 @@ public class OSCSenderService extends Service {
 		
 		Log.i(LOGGING_TAG, "Service destroyed");
 
-		running = false;
+		
 	}
 
 	private void removeStillAliveNotification() {

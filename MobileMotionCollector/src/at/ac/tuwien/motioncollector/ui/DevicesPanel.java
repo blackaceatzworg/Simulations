@@ -44,5 +44,9 @@ public class DevicesPanel extends JPanel {
 		setLayout(new BorderLayout(0, 0));
 		add(deviceList, BorderLayout.CENTER);
 	}
+	
+	public Device getSelectedDevice(){
+		return this.deviceList.getSelectedValue();
+	}
 
 }

@@ -11,7 +11,7 @@ import at.ac.tuwien.motioncapture.model.Velocity;
 import at.ac.tuwien.motioncapture.util.Filter;
 import at.ac.tuwien.motioncapture.util.MathUtil;
 
-public class VelocitySensorListener implements SensorEventListener {
+public class VelocitySensorListener implements Runnable, SensorEventListener {
 
 	private float[] gravity = new float[4];
 	private float[] linearAcceleration = new float[4];
@@ -22,17 +22,20 @@ public class VelocitySensorListener implements SensorEventListener {
 	private float[] inclinationMatrix = new float[16];
 	private float[] inverseRotationMatrix = new float[16];;
 
-	private static final float SMOOTHING_GRAVITY = 0.05f;
-	private static final float SMOOTHING_LINACCELEARTION = 0.05f;
-	private static final float SMOOTHING_MAGNETICFIELD = 0.05f;
+	private static final float SMOOTHING_GRAVITY = 0.5f;
+	private static final float SMOOTHING_LINACCELEARTION = 0.5f;
+	private static final float SMOOTHING_MAGNETICFIELD = 0.5f;
 
 	private SensorManager sensorManager;
 	private Sensor linAccSensor;
 	private Sensor gravitySensor;
 	private Sensor magneticFieldSensor;
 	
+	private ConcurrentLinkedQueue<Velocity> bufferQueue;
 	private ConcurrentLinkedQueue<Velocity> messageQueue;
 
+	private boolean running;
+	
 	public VelocitySensorListener(SensorManager sensorManager, ConcurrentLinkedQueue<Velocity> messageQueue) {
 		this.sensorManager = sensorManager;
 		this.linAccSensor = sensorManager
@@ -42,18 +45,28 @@ public class VelocitySensorListener implements SensorEventListener {
 		this.magneticFieldSensor = sensorManager
 				.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		this.messageQueue = messageQueue;
+		this.bufferQueue = new ConcurrentLinkedQueue<Velocity>();
+		
+		this.running =false;
 	}
 
 	public void start() {
+		Thread t =  new Thread(this);
+		t.start();
+		t.setPriority(Thread.MAX_PRIORITY);
+		this.running = true;
+		
+		
 		sensorManager.registerListener(this, linAccSensor,
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_UI);
 		sensorManager.registerListener(this, gravitySensor,
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_UI);
 		sensorManager.registerListener(this, magneticFieldSensor,
-				SensorManager.SENSOR_DELAY_GAME);
+				SensorManager.SENSOR_DELAY_UI);
 	}
 
 	public void stop() {
+		this.running = false;
 		sensorManager.unregisterListener(this);
 	}
 
@@ -89,6 +102,22 @@ public class VelocitySensorListener implements SensorEventListener {
 		acc.setY(MathUtil.round(accInWorldCoordinates[1], 2));
 		acc.setZ(MathUtil.round(accInWorldCoordinates[2], 2));
 
-		this.messageQueue.add(acc);
+		this.bufferQueue.add(acc);
+		//this.messageQueue.add(acc);
+	}
+
+	public void run() {
+		while(this.running){
+			while(this.bufferQueue.isEmpty()){
+				try {
+					Thread.sleep(30);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			this.messageQueue.add(this.bufferQueue.poll());
+		}
+		
 	}
 }

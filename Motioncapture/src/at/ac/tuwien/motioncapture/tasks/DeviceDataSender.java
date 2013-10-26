@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.illposed.osc.OSCMessage;
@@ -41,6 +42,7 @@ public class DeviceDataSender<V extends DeviceData> implements Runnable {
 		this.running = true;
 		this.sender = new OSCPortOut(address, port);
 		this.thread = new Thread(this);
+		this.thread.setPriority(Thread.MAX_PRIORITY);
 		this.thread.start();
 		
 	}
@@ -62,7 +64,7 @@ public class DeviceDataSender<V extends DeviceData> implements Runnable {
 			while(running){
 				while(this.messageQueue.size() == 0){
 					try {
-						Thread.sleep(10);
+						Thread.sleep(30);
 					} catch (InterruptedException e) {
 						Log.e("Sender Thread", "Thread interrupted");
 					}
@@ -72,6 +74,9 @@ public class DeviceDataSender<V extends DeviceData> implements Runnable {
 					d.setMacAddress(macAddress);
 					OSCMessage message = new OSCMessage(this.oscKey,new ArrayList<Object>(d.getAsObjectList()));
 					sender.send(message);
+					
+					
+					
 				} catch (IOException e) {
 					Log.e("Sender Thread", "Message could not be sent",e);
 				}

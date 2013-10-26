@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream.GetField;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -20,6 +21,7 @@ import javax.swing.JFrame;
 import at.ac.tuwien.motioncollector.Settings;
 import at.ac.tuwien.motioncollector.SettingsKeys;
 import at.ac.tuwien.motioncollector.handler.DeviceDataConsoleWriter;
+import at.ac.tuwien.motioncollector.handler.DeviceDataWindowHandler;
 import at.ac.tuwien.motioncollector.handler.UIDeviceDataHandler;
 import at.ac.tuwien.motioncollector.model.*;
 import at.ac.tuwien.motioncollector.osc.AddressBroadcastSender;
@@ -47,11 +49,12 @@ public class ApplicationContainer {
 	private JFrame frame;
 
 	private DevicesPanel devicesPanel;
-	private TimelinePanel timelinePanel;
-
+	
 	private DeviceDataListener listener;
 	private AddressBroadcastSender broadcastSender;
 
+	private DeviceDataWindowHandler deviceDataWindowHandler;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -100,6 +103,7 @@ public class ApplicationContainer {
 	 */
 	JButton btnStop;
 	JButton btnStart;
+	private JButton btnOpenDevice;
 
 	private void initialize() {
 
@@ -128,10 +132,6 @@ public class ApplicationContainer {
 		frame.getContentPane().add(devicesPanel, BorderLayout.WEST);
 		devicesPanel.setPreferredSize(new Dimension(200, 100));
 
-		this.timelinePanel = new TimelinePanel();
-		timelinePanel.setBorder(new EmptyBorder(10, 0, 10, 10));
-		frame.getContentPane().add(timelinePanel, BorderLayout.CENTER);
-
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
 
@@ -144,6 +144,20 @@ public class ApplicationContainer {
 				btnStop.setEnabled(true);
 			}
 		});
+		
+		btnOpenDevice = new JButton("Open Device");
+		btnOpenDevice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Device device = devicesPanel.getSelectedDevice();
+				DeviceDataWindow window = new DeviceDataWindow(device);
+				
+				window.setVisible(true);
+				
+				deviceDataWindowHandler.registerWindow(window);
+				
+			}
+		});
+		panel.add(btnOpenDevice);
 		panel.add(btnStart);
 
 		btnStop.addActionListener(new ActionListener() {
@@ -160,8 +174,13 @@ public class ApplicationContainer {
 
 	private void createListener() {
 		listener = new DeviceDataListener();
-		// listener.registerHandler(new DeviceDataConsoleWriter());
+		//listener.registerHandler(new DeviceDataConsoleWriter());
+		
 		listener.registerHandler(new UIDeviceDataHandler());
+		
+		this.deviceDataWindowHandler = new DeviceDataWindowHandler();
+		listener.registerHandler(deviceDataWindowHandler);
+		
 		new Thread(listener).start();
 		listener.startListening();
 	}
@@ -179,9 +198,8 @@ public class ApplicationContainer {
 	public DevicesPanel getDevicesPanel() {
 		return devicesPanel;
 	}
-
-	public TimelinePanel getTimelinePanel() {
-		return timelinePanel;
+	
+	public DeviceDataWindowHandler getDeviceDataWindowHandler() {
+		return deviceDataWindowHandler;
 	}
-
 }

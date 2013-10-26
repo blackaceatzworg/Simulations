@@ -32,9 +32,9 @@ public class UIDeviceDataHandler extends AbstractQueuedDeviceDataHandler {
 				macAddresses.add(data.getMacAddress());
 
 				container.getDevicesPanel().addDevice(device);
-				container.getTimelinePanel().addDevice(device);
+				//container.getTimelinePanel().addDevice(device);
 			}
-			container.getTimelinePanel().addData(device, data);
+			//container.getTimelinePanel().addData(device, data);
 		}
 
 	}

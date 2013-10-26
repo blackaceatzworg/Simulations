@@ -1,7 +1,5 @@
 package at.ac.tuwien.motioncollector.model;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.Date;
 
 public class TimelineData implements Comparable<TimelineData> {
