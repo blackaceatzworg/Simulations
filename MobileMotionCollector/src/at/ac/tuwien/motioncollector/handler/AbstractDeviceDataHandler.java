@@ -6,15 +6,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import at.ac.tuwien.motioncollector.model.DeviceData;
 import at.ac.tuwien.motioncollector.osc.DeviceDataHandler;
 
-public abstract class AbstractQueuedDeviceDataHandler implements
+public abstract class AbstractDeviceDataHandler implements
 		DeviceDataHandler {
 
 	private Queue<DeviceData> queue;
-
+	
+	private boolean paused = false;
+	
 	private boolean stop = false;
 	private boolean run = false;
 
-	public AbstractQueuedDeviceDataHandler() {
+	public AbstractDeviceDataHandler() {
 		this.queue = new ConcurrentLinkedQueue<DeviceData>();
 	}
 
@@ -22,15 +24,12 @@ public abstract class AbstractQueuedDeviceDataHandler implements
 	public void run() {
 		while (!this.stop) {
 			if (this.run) {
-				DeviceData data;
-				if ((data = this.queue.poll()) != null) {
-					this.perform(data);
-				} else {
-					try {
-						Thread.sleep(30);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+
+				DeviceData data = this.queue.poll();
+				if(data!=null){
+					perform(data);
+				}else{
+					this.pause(30, false);
 				}
 			}
 
@@ -44,9 +43,10 @@ public abstract class AbstractQueuedDeviceDataHandler implements
 	}
 
 	@Override
-	public void start() {
+	public void start(){
 		this.run = true;
-
+		
+		
 	}
 
 	@Override
@@ -54,23 +54,33 @@ public abstract class AbstractQueuedDeviceDataHandler implements
 		this.run = false;
 
 	}
-
-	@Override
-	public void handleData(DeviceData data) {
-		this.queue.add(data);
+	
+	public void queue(DeviceData data){
+		if(!this.paused){
+			this.queue.add(data);
+		}
+		
 	}
 
 	public abstract void perform(DeviceData data);
 
 	public abstract void closeChildren();
 	
-	protected void pause(long millis){
+	public void pause(long millis, boolean delete){
+		this.paused = true && delete;
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		this.queue.clear();
+		if(delete){
+			this.queue.clear();
+		}
+		this.paused = false ;
+		
 	}
+
+	public boolean isPaused() {
+		return paused;
+	}
+	
 }

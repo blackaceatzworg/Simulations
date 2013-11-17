@@ -86,7 +86,7 @@ public class ApplicationContainer {
 		try {
 			this.broadcastSender = AddressBroadcastSender.startInstance(
 					NetworkInterface.getByName("en1"),
-					InetAddress.getByName("10.0.0.255"),
+					InetAddress.getByName("192.168.0.255"),
 					Settings.getInt(SettingsKeys.OSCBroadcastPort.key()));
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
@@ -105,6 +105,8 @@ public class ApplicationContainer {
 	JButton btnStart;
 	private JButton btnOpenDevice;
 
+	private UIDeviceDataHandler uiDeviceDataHandler;
+
 	private void initialize() {
 
 		frame = new JFrame();
@@ -118,7 +120,12 @@ public class ApplicationContainer {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				if (listener != null) {
-					ApplicationContainer.this.listener.close();
+					try {
+						ApplicationContainer.this.listener.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 				if (broadcastSender != null) {
 					broadcastSender.stop();
@@ -139,7 +146,12 @@ public class ApplicationContainer {
 		btnStart = new JButton("Start");
 		btnStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ApplicationContainer.this.createListener();
+				try {
+					ApplicationContainer.this.createListener();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				btnStart.setEnabled(false);
 				btnStop.setEnabled(true);
 			}
@@ -162,7 +174,12 @@ public class ApplicationContainer {
 
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ApplicationContainer.this.closeListener();
+				try {
+					ApplicationContainer.this.closeListener();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				btnStart.setEnabled(true);
 				btnStop.setEnabled(false);
 			}
@@ -172,20 +189,22 @@ public class ApplicationContainer {
 		btnStop.setEnabled(false);
 	}
 
-	private void createListener() {
+	private void createListener() throws IOException {
 		listener = new DeviceDataListener();
-		//listener.registerHandler(new DeviceDataConsoleWriter());
 		
-		listener.registerHandler(new UIDeviceDataHandler());
-		
+		this.uiDeviceDataHandler = new UIDeviceDataHandler();
 		this.deviceDataWindowHandler = new DeviceDataWindowHandler();
-		listener.registerHandler(deviceDataWindowHandler);
 		
-		new Thread(listener).start();
+		listener.registerHandler(this.uiDeviceDataHandler);
+		listener.registerHandler(this.deviceDataWindowHandler);
+//		this.deviceDataWindowHandler = new DeviceDataWindowHandler();
+//		listener.registerHandler(this.deviceDataWindowHandler);
+//		
+//		
 		listener.startListening();
 	}
 
-	private void closeListener() {
+	private void closeListener() throws IOException {
 		this.listener.stopListening();
 		this.listener.close();
 		this.listener = null;

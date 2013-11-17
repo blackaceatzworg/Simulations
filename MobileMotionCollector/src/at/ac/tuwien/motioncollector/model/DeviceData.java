@@ -1,10 +1,15 @@
 package at.ac.tuwien.motioncollector.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class DeviceData {
+public class DeviceData implements Serializable {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4019230672434053628L;
 	private Velocity velocity;
 	
 	public Velocity getVelocity() {

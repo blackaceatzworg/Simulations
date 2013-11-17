@@ -4,7 +4,11 @@ import java.text.SimpleDateFormat;
 
 import at.ac.tuwien.motioncollector.model.DeviceData;
 
-public class DeviceDataConsoleWriter extends AbstractQueuedDeviceDataHandler {
+public class DeviceDataConsoleWriter extends AbstractDeviceDataHandler {
+
+	public DeviceDataConsoleWriter() {
+		super();
+	}
 
 	private static SimpleDateFormat sdf  = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");;
 	

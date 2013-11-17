@@ -6,7 +6,7 @@ import java.util.List;
 import at.ac.tuwien.motioncollector.model.DeviceData;
 import at.ac.tuwien.motioncollector.ui.DeviceDataWindow;
 
-public class DeviceDataWindowHandler extends AbstractQueuedDeviceDataHandler {
+public class DeviceDataWindowHandler extends AbstractDeviceDataHandler {
 
 	private List<DeviceDataWindow> windows;
 	
@@ -18,14 +18,14 @@ public class DeviceDataWindowHandler extends AbstractQueuedDeviceDataHandler {
 	@Override
 	public void perform(DeviceData data) {
 		
-		if(this.windows.size()==0){
-			this.pause(500);
-		}else{
+		if(this.windows.size()!=0){
 			for(DeviceDataWindow ddw : this.windows){
 			if(ddw.getDevice().getMacAddress().equals(data.getMacAddress())){
 				ddw.addData(data);
 			}
 		}
+		}else{
+			this.pause(1000,true);
 		}
 		
 		

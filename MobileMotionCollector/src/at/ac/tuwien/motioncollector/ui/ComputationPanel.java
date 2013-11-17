@@ -10,23 +10,23 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import timeline.ComputedTimeline;
+import timeline.CorrelationTimline;
+import timeline.JumpRecognitionTimeline;
 import timeline.TimelineData;
 import at.ac.tuwien.motioncollector.model.DeviceData;
 
-public class TimelinePanel<T extends ComputedTimeline> extends JPanel {
+public class ComputationPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	
-	private final Class<T> timelineClass;
-	private T timeline;
+
+	private JumpRecognitionTimeline timeline;
 	JPanel drawingPanel;
 
 	private Color color;
 	private long timespan;
 
-	public TimelinePanel(Class<T> timelineClass,Color color , long timespan) {
+	public ComputationPanel(Color color , long timespan) {
 		super();
-		this.timelineClass = timelineClass;
 		this.color = color;
 		this.timespan = timespan;
 
@@ -54,8 +54,9 @@ public class TimelinePanel<T extends ComputedTimeline> extends JPanel {
 		drawingPanel.setLayout(null);
  
 		
-		this.timeline =  this.createTimeline(timelineClass, color, timespan);
-
+		this.timeline =  new JumpRecognitionTimeline();
+		this.timeline.setTimespan(timespan);
+			
 		this.addComponentListener(new ComponentListener() {
 
 			@Override
@@ -86,29 +87,15 @@ public class TimelinePanel<T extends ComputedTimeline> extends JPanel {
 		this.timeline.isActive();
 	}
 
-	public void addData(TimelineData data) {
-		timeline.appendData(data);
 
-		this.drawingPanel.repaint();
-
-	}
 
 	public void addData(DeviceData data) {
 		timeline.appendData(data);
+		
 		this.drawingPanel.repaint();
 		
 	}
 	
-	private T createTimeline(Class<T> clazz, Color color, long timespan){
-		try {
-			T t =  clazz.newInstance();
-			t.setColor(color);
-			t.setTimespan(timespan);
-			return t;
-		} catch (InstantiationException | IllegalAccessException e) {
-			//irrelevant
-		}
-		return null;
-	}
+
 
 }

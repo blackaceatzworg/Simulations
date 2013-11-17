@@ -1,6 +1,12 @@
 package at.ac.tuwien.motioncollector.model;
 
-public class Velocity {
+import java.io.Serializable;
+
+public class Velocity implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -440165483424429948L;
 	private float x,y,z;
 	
 	public Velocity(float x, float y , float z) {

@@ -6,7 +6,7 @@ import at.ac.tuwien.motioncollector.model.Device;
 import at.ac.tuwien.motioncollector.model.DeviceData;
 import at.ac.tuwien.motioncollector.ui.ApplicationContainer;
 
-public class UIDeviceDataHandler extends AbstractQueuedDeviceDataHandler {
+public class UIDeviceDataHandler extends AbstractDeviceDataHandler {
 
 	private ApplicationContainer container;
 	private HashSet<String> macAddresses;
@@ -36,6 +36,7 @@ public class UIDeviceDataHandler extends AbstractQueuedDeviceDataHandler {
 			}
 			//container.getTimelinePanel().addData(device, data);
 		}
+		this.pause(1000,true);
 
 	}
 

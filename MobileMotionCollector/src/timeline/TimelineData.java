@@ -1,4 +1,4 @@
-package at.ac.tuwien.motioncollector.model;
+package timeline;
 
 import java.util.Date;
 

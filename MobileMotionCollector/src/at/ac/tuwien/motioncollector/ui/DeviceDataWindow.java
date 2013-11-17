@@ -4,12 +4,19 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JFrame;
 
+import timeline.AbsVelocityTimeline;
+import timeline.ComputedTimeline;
+import timeline.CorrelationTimline;
+import timeline.JumpRecognitionTimeline;
+import timeline.XVelocityTimeline;
+import timeline.ZVelocityTimeline;
 import at.ac.tuwien.motioncollector.model.Device;
 import at.ac.tuwien.motioncollector.model.DeviceData;
-import at.ac.tuwien.motioncollector.model.TimelineData;
 
 public class DeviceDataWindow extends JFrame {
 
@@ -17,16 +24,19 @@ public class DeviceDataWindow extends JFrame {
 
 	private Device device;
 	
-	private TimelinePanel absPanel;
-	private TimelinePanel xPanel;
-	private TimelinePanel yPanel;
-	private TimelinePanel zPanel;
+	private List<TimelinePanel<? extends ComputedTimeline>> panels;
+	private ComputationPanel compPanel;
 	
-	/**
-	 * Create the frame.
-	 */
 	public DeviceDataWindow(Device device ) {
 		this.device = device;
+		
+		this.panels = new LinkedList<TimelinePanel<? extends ComputedTimeline>>();
+		
+		this.panels.add(new TimelinePanel<AbsVelocityTimeline>(AbsVelocityTimeline.class, Color.black, 5000));
+		this.panels.add(new TimelinePanel<ZVelocityTimeline>(ZVelocityTimeline.class, Color.black, 5000));
+		this.panels.add(new TimelinePanel<CorrelationTimline>(CorrelationTimline.class, Color.black, 5000));
+		
+		compPanel = new ComputationPanel(Color.black,5000);
 		initialize();
 	}
 	
@@ -43,20 +53,13 @@ public class DeviceDataWindow extends JFrame {
 			}
 		});
 		
-		this.absPanel = new TimelinePanel(Color.black,5000);
-		this.xPanel = new TimelinePanel(Color.black,5000);
-		this.yPanel = new TimelinePanel(Color.black,5000);
-		this.zPanel =  new TimelinePanel(Color.black,5000);
+		for(TimelinePanel<? extends ComputedTimeline> panel : this.panels){
+			this.getContentPane().add(panel);
+			panel.setActive(true);
+		}
 		
-		this.getContentPane().add(absPanel);
-		this.getContentPane().add(xPanel);
-		this.getContentPane().add(yPanel);
-		this.getContentPane().add(zPanel);
+		this.getContentPane().add(this.compPanel);
 		
-		this.absPanel.setActive(true);
-		this.xPanel.setActive(true);
-		this.yPanel.setActive(true);
-		this.zPanel.setActive(true);
 		
 	}
 	public Device getDevice() {
@@ -64,10 +67,11 @@ public class DeviceDataWindow extends JFrame {
 	}
 	public void addData(DeviceData data){
 		
-		absPanel.addData(new TimelineData(data.getReceiveDate(), data.getVelocity().getAbs()));
-		xPanel.addData(new TimelineData(data.getReceiveDate(), data.getVelocity().getX()));
-		yPanel.addData(new TimelineData(data.getReceiveDate(), data.getVelocity().getY()));
-		zPanel.addData(new TimelineData(data.getReceiveDate(), data.getVelocity().getZ()));
+		for(TimelinePanel<? extends ComputedTimeline> panel : this.panels){
+			panel.addData(data);
+		}
+		
+		this.compPanel.addData(data);
 	}
 	
 

@@ -1,11 +1,10 @@
 package at.ac.tuwien.motioncollector.osc;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.HashSet;
+import java.util.Set;
 
 import at.ac.tuwien.motioncollector.Settings;
 import at.ac.tuwien.motioncollector.model.DeviceData;
@@ -15,20 +14,15 @@ import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
 
-public class DeviceDataListener implements Runnable {
+public class DeviceDataListener{
 
-	private List<DeviceDataHandler> handlers;
+	private Set<DeviceDataHandler> handlers;
 	private OSCPortIn receiver;
 
-	private Queue<DeviceData> dataQueue;
+	public DeviceDataListener() throws IOException {
 
-	private boolean isRunning = false;
-	private boolean stop = false;
-
-	public DeviceDataListener() {
-		this.handlers = new LinkedList<DeviceDataHandler>();
-		this.dataQueue = new ConcurrentLinkedQueue<DeviceData>();
-
+		this.handlers = new HashSet<DeviceDataHandler>();
+		
 		try {
 			receiver = new OSCPortIn(Integer.parseInt(Settings
 					.getValue("oscportin")));
@@ -52,11 +46,12 @@ public class DeviceDataListener implements Runnable {
 						data.setVelocity(new Velocity((Float) parameter[0],
 								(Float) parameter[1], (Float) parameter[2]));
 						data.setMacAddress(parameter[3].toString());
-						DeviceDataListener.this.dataQueue.add(data);
+						
+							
+							for(DeviceDataHandler handler:  DeviceDataListener.this.handlers){
+								handler.queue(data);
+							}
 					}
-
-					
-
 				}
 			});
 
@@ -67,81 +62,39 @@ public class DeviceDataListener implements Runnable {
 		}
 	}
 
-	public void registerHandler(DeviceDataHandler handler) {
-		new Thread(handler).start();
+
+	public void registerHandler(DeviceDataHandler handler) throws IOException {
 		this.handlers.add(handler);
+		new Thread(handler).start();
 	}
 
-	public void unregisterHandler(DeviceDataHandler handler) {
+	public void unregisterHandler(DeviceDataHandler handler) throws IOException {
 		handler.close();
 		this.handlers.remove(handler);
-	}
-
-	private void receiveData(DeviceData data) {
-		for (DeviceDataHandler handler : this.handlers) {
-			handler.handleData(data);
-		}
-		
 		
 	}
 
-	public void close() {
-		this.isRunning = false;
-		this.stop = true;
-		for (DeviceDataHandler handler : this.handlers) {
+	public void close() throws IOException {
+		
+		for(DeviceDataHandler handler : this.handlers){
 			handler.close();
 		}
+		this.handlers = null;
 		this.receiver.close();
 
 	}
 
-	public void stopListening() {
-		this.isRunning = false;
-
-		for (DeviceDataHandler handler : this.handlers) {
+	public void stopListening() throws IOException {
+		for(DeviceDataHandler handler : this.handlers){
 			handler.stop();
 		}
-
 		this.receiver.stopListening();
-		
 	}
 
-	public void startListening() {
-
-		this.receiver.startListening();
-		for (DeviceDataHandler handler : this.handlers) {
+	public void startListening()throws IOException {	
+		for(DeviceDataHandler handler : this.handlers){
 			handler.start();
 		}
-		this.isRunning = true;
+		this.receiver.startListening();
 	}
-
-	@Override
-	public void run() {
-		while (!this.stop) {
-
-			if (!this.isRunning) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				if (this.dataQueue.isEmpty()) {
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				} else {
-					this.receiveData(this.dataQueue.poll());
-				}
-			}
-
-		}
-
-	}
-
 }
