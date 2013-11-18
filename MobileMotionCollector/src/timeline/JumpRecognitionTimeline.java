@@ -6,12 +6,17 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
+
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
 
 import at.ac.tuwien.motioncollector.model.DeviceData;
 import at.ac.tuwien.motioncollector.model.signal.ZeroCrossing;
@@ -22,7 +27,9 @@ public class JumpRecognitionTimeline {
 	private TreeMap<Date, DeviceData> dataMap;
 	
 	private SortedMap<Date, ZeroCrossing> zeroCrossings;
-	
+	private List<TimelineData> meanList;
+	private TimelineData localMinimum;
+	private TimelineData localMaximum;
 	
 	private int height,width;
 
@@ -35,6 +42,7 @@ public class JumpRecognitionTimeline {
 		super();
 		this.dataMap = new TreeMap<Date,DeviceData>();
 		this.zeroCrossings = new TreeMap<Date, ZeroCrossing>();
+		this.meanList = new ArrayList<TimelineData>();
 	}
 
 	public void appendData(DeviceData data){
@@ -44,11 +52,64 @@ public class JumpRecognitionTimeline {
 		
 		this.dataMap.put(data.getReceiveDate(), data);
 		
-		
-		
-		if(last != null &&  ((last.getVelocity().getX()>0 && data.getVelocity().getX()<0) || (last.getVelocity().getX()<0 && data.getVelocity().getX()>0))){
-			this.zeroCrossings.put(data.getReceiveDate(), new ZeroCrossing(last.getVelocity().getX(), data.getVelocity().getX(), data.getReceiveDate()));
+		if(last != null &&  ((last.getVelocity().getZ()>0 && data.getVelocity().getZ()<0) || (last.getVelocity().getZ()<0 && data.getVelocity().getZ()>0))){
+			this.zeroCrossings.put(data.getReceiveDate(), new ZeroCrossing(last.getVelocity().getZ(), data.getVelocity().getZ(), data.getReceiveDate()));
 		}
+		
+		this.meanList.add(new TimelineData(data.getReceiveDate(), data.getVelocity().getZ()));
+		if(this.meanList.size()>3){
+			Mean mean = new Mean();
+			this.meanList.remove(0);
+			
+			TimelineData dataMax = Collections.max(this.meanList, new Comparator<TimelineData>() {
+
+				@Override
+				public int compare(TimelineData o1, TimelineData o2) {
+					return Float.compare(o1.getValue(), o2.getValue());
+				}
+			});
+			
+			if(dataMax.getValue()>5){
+				int index = this.meanList.indexOf(dataMax);
+			
+			if(index==2){
+				this.localMaximum = dataMax;
+			}
+			}
+			
+			
+			
+			
+			
+			TimelineData dataMin = Collections.min(this.meanList, new Comparator<TimelineData>() {
+
+				@Override
+				public int compare(TimelineData o1, TimelineData o2) {
+					return Float.compare(o1.getValue(), o2.getValue());
+				}
+			});
+			
+			
+			if(dataMin.getValue()<-5){
+				int index = this.meanList.indexOf(dataMin);
+			
+				if(index==2){
+					this.localMinimum = dataMin;
+				}
+			}
+			
+			
+			
+			
+			
+			
+			
+		}
+		
+		
+		
+		
+		
 		
 		
 	}
@@ -62,6 +123,17 @@ public class JumpRecognitionTimeline {
 			float x = normalizeX(crossing.getDate().getTime()-now.getTime());
 			g.setColor(Color.red);
 			g.drawOval((int) x, this.height/4, 10, 10);
+		}
+		
+		if(this.localMaximum!=null){
+			float x = normalizeX(localMaximum.getDate().getTime()-now.getTime());
+			g.setColor(Color.BLUE);
+			g.drawOval((int) x, 2*this.height/4, 5, 5);
+		}
+		if(this.localMaximum!=null){
+			float x = normalizeX(localMinimum.getDate().getTime()-now.getTime());
+			g.setColor(Color.GREEN);
+			g.drawOval((int) x, 3*this.height/4, 5, 5);
 		}
 
 	}
